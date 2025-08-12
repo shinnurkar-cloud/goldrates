@@ -1,17 +1,22 @@
-import { defineFlow } from 'genkit';
-import { z } from 'zod';
-import { ai } from '../genkit';
+'use server';
 
-export const forgotPasswordFlow = defineFlow(
+import { z } from 'zod';
+import { ai } from '@/ai/genkit';
+
+const ForgotPasswordInputSchema = z.object({
+  userQuery: z.string(),
+});
+
+const ForgotPasswordOutputSchema = z.object({
+  shouldOfferMasterPassword: z.boolean(),
+  response: z.string(),
+});
+
+export const forgotPasswordFlow = ai.defineFlow(
   {
     name: 'forgotPasswordFlow',
-    inputSchema: z.object({
-      userQuery: z.string(),
-    }),
-    outputSchema: z.object({
-      shouldOfferMasterPassword: z.boolean(),
-      response: z.string(),
-    }),
+    inputSchema: ForgotPasswordInputSchema,
+    outputSchema: ForgotPasswordOutputSchema,
   },
   async ({ userQuery }) => {
     const prompt = `A user of the Kalaburagi Price app is interacting with a password reset assistant. Their input is: "${userQuery}".
@@ -30,10 +35,7 @@ Your response MUST be a valid JSON object matching the specified schema.`;
         model: 'googleai/gemini-1.5-flash-latest',
         output: {
           format: 'json',
-          schema: z.object({
-            shouldOfferMasterPassword: z.boolean(),
-            response: z.string(),
-          }),
+          schema: ForgotPasswordOutputSchema,
         },
         config: {
           temperature: 0.1,
@@ -47,7 +49,6 @@ Your response MUST be a valid JSON object matching the specified schema.`;
     } catch (e) {
       console.error('Error with AI model:', e);
     }
-
 
     // Fallback in case of LLM failure
     return {
