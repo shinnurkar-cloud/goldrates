@@ -14,7 +14,7 @@ export const forgotPasswordFlow = defineFlow(
     }),
   },
   async ({ userQuery }) => {
-    const prompt = `A user of the GoldenEye app is interacting with a password reset assistant. Their input is: "${userQuery}".
+    const prompt = `A user of the Kalaburagi Price app is interacting with a password reset assistant. Their input is: "${userQuery}".
 
 Analyze the user's intent. Your task is to determine if the user has forgotten their password and needs to reset it.
 

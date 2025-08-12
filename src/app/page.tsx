@@ -18,10 +18,10 @@ export default function Home() {
             <Gem className="w-10 h-10" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary-foreground/90">
-            GoldenEye
+            Kalaburagi Price
           </h1>
           <p className="text-muted-foreground">
-            Live Gold Prices, Instantly.
+            Live Gold Prices in Kalaburagi.
           </p>
         </header>
 
@@ -33,7 +33,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} GoldenEye. All rights reserved.
+          &copy; {new Date().getFullYear()} Kalaburagi Price. All rights reserved.
         </p>
       </footer>
     </div>
