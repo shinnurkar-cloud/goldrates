@@ -11,15 +11,20 @@ type GoldPriceDisplayProps = {
 
 export function GoldPriceDisplay({ initialPrice, initialLastUpdated }: GoldPriceDisplayProps) {
   const [price, setPrice] = useState(initialPrice);
-  const [lastUpdated, setLastUpdated] = useState(new Date(initialLastUpdated));
+  const [lastUpdated, setLastUpdated] = useState(initialLastUpdated);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [formattedDate, setFormattedDate] = useState('');
+
+  useEffect(() => {
+    setFormattedDate(format(new Date(lastUpdated), "MMM d, yyyy 'at' h:mm a"));
+  }, [lastUpdated]);
 
   useEffect(() => {
     // This effect triggers the animation when the initialPrice prop changes
     if (price !== initialPrice) {
       setIsAnimating(true);
       setPrice(initialPrice);
-      setLastUpdated(new Date(initialLastUpdated));
+      setLastUpdated(initialLastUpdated);
       const timer = setTimeout(() => setIsAnimating(false), 500);
       return () => clearTimeout(timer);
     }
@@ -42,7 +47,7 @@ export function GoldPriceDisplay({ initialPrice, initialLastUpdated }: GoldPrice
           ₹{price.toLocaleString('en-IN')}
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Last Updated: {format(lastUpdated, "MMM d, yyyy 'at' h:mm a")}
+          Last Updated: {formattedDate}
         </p>
       </CardContent>
     </Card>
