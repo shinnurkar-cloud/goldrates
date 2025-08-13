@@ -18,6 +18,14 @@ export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
 };
 
 export const updateGoldPrice = (newPrice: number): void => {
+  // If the history is empty (can happen on dev server reload), initialize it
+  if (goldPriceHistory.length === 0) {
+    goldPriceHistory.push({
+      price: 72430, // Start with the original default
+      lastUpdated: new Date(Date.now() - 1000), // a bit in the past
+    });
+  }
+
   goldPriceHistory.push({
     price: newPrice,
     lastUpdated: new Date(),
@@ -30,6 +38,10 @@ export const updateGoldPrice = (newPrice: number): void => {
 };
 
 export const getGoldPrice = (): GoldPriceHistoryEntry => {
+    if (goldPriceHistory.length === 0) {
+        // This is a fallback for the edge case where the server has reloaded and no price has been set yet.
+        return { price: 72430, lastUpdated: new Date().toISOString() as any };
+    }
     const latest = goldPriceHistory[goldPriceHistory.length - 1];
     return {...latest, lastUpdated: latest.lastUpdated.toISOString() as any};
 };
