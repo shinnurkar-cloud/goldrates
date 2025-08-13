@@ -7,28 +7,55 @@ import { format } from 'date-fns';
 type GoldPriceDisplayProps = {
   initialPrice: number;
   initialLastUpdated: string;
+  apiKey?: string;
 };
 
-export function GoldPriceDisplay({ initialPrice, initialLastUpdated }: GoldPriceDisplayProps) {
+export function GoldPriceDisplay({ initialPrice, initialLastUpdated, apiKey }: GoldPriceDisplayProps) {
   const [price, setPrice] = useState(initialPrice);
   const [lastUpdated, setLastUpdated] = useState(initialLastUpdated);
   const [isAnimating, setIsAnimating] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
 
   useEffect(() => {
-    setFormattedDate(format(new Date(lastUpdated), "MMM d, yyyy 'at' h:mm a"));
+    // Format date initially
+    if (lastUpdated) {
+      setFormattedDate(format(new Date(lastUpdated), "MMM d, yyyy 'at' h:mm a"));
+    }
   }, [lastUpdated]);
 
   useEffect(() => {
-    // This effect triggers the animation when the initialPrice prop changes
     if (price !== initialPrice) {
       setIsAnimating(true);
-      setPrice(initialPrice);
-      setLastUpdated(initialLastUpdated);
       const timer = setTimeout(() => setIsAnimating(false), 500);
       return () => clearTimeout(timer);
     }
-  }, [initialPrice, initialLastUpdated, price]);
+  }, [price, initialPrice]);
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch('/api/price', {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.price !== price) {
+            setPrice(data.price);
+            setLastUpdated(data.lastUpdated);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch price:', error);
+      }
+    };
+
+    if (apiKey) {
+      const interval = setInterval(fetchPrice, 5000); // Poll every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [price, apiKey]);
 
   return (
     <Card className="w-full text-center shadow-lg border-primary/20 bg-card overflow-hidden">

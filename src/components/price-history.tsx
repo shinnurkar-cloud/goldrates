@@ -13,23 +13,42 @@ type PriceHistoryEntry = {
 };
 
 type PriceHistoryProps = {
-  history: PriceHistoryEntry[];
+  initialHistory: PriceHistoryEntry[];
+  apiKey?: string;
 };
 
-export function PriceHistory({ history }: PriceHistoryProps) {
-  const [clientHistory, setClientHistory] = useState<PriceHistoryEntry[]>([]);
+export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
+  const [history, setHistory] = useState<PriceHistoryEntry[]>(initialHistory);
 
   useEffect(() => {
-    // Ensure dates are formatted on the client to avoid hydration mismatch
-    setClientHistory(history);
+    const fetchHistory = async () => {
+        try {
+            const res = await fetch('/api/price/history');
+            if (res.ok) {
+                const data = await res.json();
+                // Simple check to see if data is different
+                if (JSON.stringify(data) !== JSON.stringify(history)) {
+                    setHistory(data);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch price history:', error);
+        }
+    };
+    
+    // We don't need the API key for history, but this ensures polling starts
+    // at the same time as the price display.
+    const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+
   }, [history]);
 
   const getTrend = (index: number) => {
-    if (index >= clientHistory.length - 1) {
+    if (index >= history.length - 1) {
       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
-    const currentPrice = clientHistory[index].price;
-    const previousPrice = clientHistory[index + 1].price;
+    const currentPrice = history[index].price;
+    const previousPrice = history[index + 1].price;
     const difference = currentPrice - previousPrice;
 
     if (difference > 0) {
@@ -57,7 +76,7 @@ export function PriceHistory({ history }: PriceHistoryProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {clientHistory.map((entry, index) => {
+            {history.map((entry, index) => {
               const { icon, color, difference } = getTrend(index);
               const isLatest = index === 0;
               return (

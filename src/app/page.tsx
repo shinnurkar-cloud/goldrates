@@ -11,6 +11,7 @@ export const revalidate = 0;
 export default function Home() {
   const { price, lastUpdated } = getGoldPrice();
   const history = getGoldPriceHistory();
+  const apiKey = process.env.GOLD_API_KEY;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 font-body">
@@ -27,8 +28,8 @@ export default function Home() {
           </p>
         </header>
 
-        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} />
-        <PriceHistory history={history} />
+        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} apiKey={apiKey} />
+        <PriceHistory initialHistory={history} apiKey={apiKey} />
 
         <div className="w-full pt-4">
           <AdminPanel />
