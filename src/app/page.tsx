@@ -16,7 +16,7 @@ export default function Home() {
   const apiKey = process.env.GOLD_API_KEY;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 font-body">
+    <div className="flex flex-col items-center justify-center min-h-screen text-foreground p-4 font-body">
       <main className="w-full max-w-md mx-auto space-y-8 flex flex-col flex-grow justify-center">
         <header className="text-center space-y-2">
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
