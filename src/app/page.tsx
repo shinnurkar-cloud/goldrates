@@ -27,7 +27,7 @@ export default function Home() {
           </p>
         </header>
 
-        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated.toISOString()} />
+        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} />
         <PriceHistory history={history} />
 
         <div className="w-full pt-4">

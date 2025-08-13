@@ -5,10 +5,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "./ui/badge";
+import { useState, useEffect } from "react";
 
 type PriceHistoryEntry = {
   price: number;
-  lastUpdated: Date;
+  lastUpdated: Date | string;
 };
 
 type PriceHistoryProps = {
@@ -16,12 +17,19 @@ type PriceHistoryProps = {
 };
 
 export function PriceHistory({ history }: PriceHistoryProps) {
+  const [clientHistory, setClientHistory] = useState<PriceHistoryEntry[]>([]);
+
+  useEffect(() => {
+    // Ensure dates are formatted on the client to avoid hydration mismatch
+    setClientHistory(history);
+  }, [history]);
+
   const getTrend = (index: number) => {
-    if (index >= history.length - 1) {
+    if (index >= clientHistory.length - 1) {
       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
-    const currentPrice = history[index].price;
-    const previousPrice = history[index + 1].price;
+    const currentPrice = clientHistory[index].price;
+    const previousPrice = clientHistory[index + 1].price;
     const difference = currentPrice - previousPrice;
 
     if (difference > 0) {
@@ -43,12 +51,13 @@ export function PriceHistory({ history }: PriceHistoryProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="text-left">Price</TableHead>
+
               <TableHead className="text-left">Date</TableHead>
               <TableHead className="text-right">Trend</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history.map((entry, index) => {
+            {clientHistory.map((entry, index) => {
               const { icon, color, difference } = getTrend(index);
               const isLatest = index === 0;
               return (

@@ -11,7 +11,10 @@ let goldPriceHistory: GoldPriceHistoryEntry[] = [
 ];
 
 export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
-  return [...goldPriceHistory].reverse(); // Return a reversed copy so latest is first
+  // Return a copy with ISO strings to ensure consistency between server and client
+  return [...goldPriceHistory]
+    .map(entry => ({...entry, lastUpdated: entry.lastUpdated.toISOString() as any}))
+    .reverse(); 
 };
 
 export const updateGoldPrice = (newPrice: number): void => {
@@ -27,5 +30,6 @@ export const updateGoldPrice = (newPrice: number): void => {
 };
 
 export const getGoldPrice = (): GoldPriceHistoryEntry => {
-    return goldPriceHistory[goldPriceHistory.length - 1];
+    const latest = goldPriceHistory[goldPriceHistory.length - 1];
+    return {...latest, lastUpdated: latest.lastUpdated.toISOString() as any};
 };
