@@ -9,12 +9,21 @@ type GoldPriceHistoryEntry = {
 let goldPriceHistory: GoldPriceHistoryEntry[] = [
   { price: 72430, lastUpdated: new Date() }
 ];
+let message: string = 'Welcome! All prices are for 24 Karat Gold per 10 grams.';
+
+export const getMessage = (): { message: string } => {
+  return { message };
+};
+
+export const updateMessage = (newMessage: string): void => {
+  message = newMessage;
+};
+
 
 export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
   // Return a copy with ISO strings to ensure consistency between server and client
   return [...goldPriceHistory]
-    .map(entry => ({...entry, lastUpdated: entry.lastUpdated.toISOString() as any}))
-    .reverse(); 
+    .map(entry => ({...entry, lastUpdated: entry.lastUpdated.toISOString() as any}));
 };
 
 export const updateGoldPrice = (newPrice: number): void => {

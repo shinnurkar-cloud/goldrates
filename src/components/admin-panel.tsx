@@ -9,6 +9,7 @@ import {
   loginAction,
   updatePriceAction,
   changePasswordAction,
+  updateMessageAction,
 } from '@/app/actions';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
@@ -30,7 +32,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog } from 'lucide-react';
+import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus } from 'lucide-react';
 import { ForgotPasswordDialog } from './forgot-password-dialog';
 
 const loginSchema = z.object({
@@ -53,6 +55,10 @@ const changePasswordSchema = z
     path: ['confirmPassword'],
   });
 
+const updateMessageSchema = z.object({
+  message: z.string().min(1, 'Message cannot be empty.'),
+});
+
 export function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -72,6 +78,11 @@ export function AdminPanel() {
   const changePasswordForm = useForm<z.infer<typeof changePasswordSchema>>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: { oldPassword: '', newPassword: '', confirmPassword: '' },
+  });
+
+  const updateMessageForm = useForm<z.infer<typeof updateMessageSchema>>({
+    resolver: zodResolver(updateMessageSchema),
+    defaultValues: { message: '' },
   });
 
   const handleLogin = (values: z.infer<typeof loginSchema>) => {
@@ -126,6 +137,19 @@ export function AdminPanel() {
       }
     });
   };
+  
+  const handleUpdateMessage = (values: z.infer<typeof updateMessageSchema>) => {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append('message', values.message);
+      const result = await updateMessageAction(formData);
+      if (result.success) {
+        toast({ title: 'Success!', description: result.message });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      }
+    });
+  };
 
   if (isLoggedIn) {
     return (
@@ -133,7 +157,7 @@ export function AdminPanel() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2"><UserCog/>Admin Panel</CardTitle>
-            <CardDescription>Update price or change password.</CardDescription>
+            <CardDescription>Update price, message, or change password.</CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
@@ -142,8 +166,9 @@ export function AdminPanel() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="update-price">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="update-price">Update Price</TabsTrigger>
+              <TabsTrigger value="update-message">Update Message</TabsTrigger>
               <TabsTrigger value="change-password">Change Password</TabsTrigger>
             </TabsList>
             <TabsContent value="update-price" className="pt-4">
@@ -162,6 +187,26 @@ export function AdminPanel() {
                   <Button type="submit" className="w-full" disabled={isPending}>
                     {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCcw className="mr-2 h-4 w-4" />}
                     Update Price
+                  </Button>
+                </form>
+              </Form>
+            </TabsContent>
+            <TabsContent value="update-message" className="pt-4">
+              <Form {...updateMessageForm}>
+                <form onSubmit={updateMessageForm.handleSubmit(handleUpdateMessage)} className="space-y-4">
+                  <FormField control={updateMessageForm.control} name="message" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Message</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Enter a message for your users" {...field} disabled={isPending} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquarePlus className="mr-2 h-4 w-4" />}
+                    Update Message
                   </Button>
                 </form>
               </Form>

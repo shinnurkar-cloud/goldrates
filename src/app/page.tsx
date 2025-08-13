@@ -1,8 +1,9 @@
 import { GoldPriceDisplay } from '@/components/gold-price-display';
 import { AdminPanel } from '@/components/admin-panel';
-import { getGoldPrice, getGoldPriceHistory } from '@/lib/data';
+import { getGoldPrice, getGoldPriceHistory, getMessage } from '@/lib/data';
 import { Gem } from 'lucide-react';
 import { PriceHistory } from '@/components/price-history';
+import { MessageBoard } from '@/components/message-board';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -11,6 +12,7 @@ export const revalidate = 0;
 export default function Home() {
   const { price, lastUpdated } = getGoldPrice();
   const history = getGoldPriceHistory();
+  const { message } = getMessage();
   const apiKey = process.env.GOLD_API_KEY;
 
   return (
@@ -28,6 +30,7 @@ export default function Home() {
           </p>
         </header>
 
+        <MessageBoard initialMessage={message} apiKey={apiKey} />
         <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} apiKey={apiKey} />
         <PriceHistory initialHistory={history} apiKey={apiKey} />
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { updateGoldPrice } from '@/lib/data';
+import { updateGoldPrice, updateMessage } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 
 // In a real app, these would be in a secure database and environment variables.
@@ -104,4 +104,24 @@ export async function resetPasswordWithMasterKeyAction(formData: FormData) {
     } catch (error) {
       return { success: false, message: 'An unexpected error occurred.' };
     }
+}
+
+const updateMessageSchema = z.object({
+  message: z.string().min(1, 'Message cannot be empty.'),
+});
+
+export async function updateMessageAction(formData: FormData) {
+  try {
+    const parsed = updateMessageSchema.safeParse(Object.fromEntries(formData.entries()));
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.errors[0].message };
+    }
+
+    updateMessage(parsed.data.message);
+    revalidatePath('/');
+    return { success: true, message: 'Message updated successfully!' };
+  } catch (error) {
+    return { success: false, message: 'An unexpected error occurred.' };
+  }
 }
