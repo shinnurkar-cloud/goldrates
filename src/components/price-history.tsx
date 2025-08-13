@@ -18,17 +18,19 @@ type PriceHistoryProps = {
 export function PriceHistory({ history }: PriceHistoryProps) {
   const getTrend = (index: number) => {
     if (index >= history.length - 1) {
-      return { icon: <Minus className="text-muted-foreground" />, color: "text-muted-foreground" };
+      return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
     const currentPrice = history[index].price;
     const previousPrice = history[index + 1].price;
-    if (currentPrice > previousPrice) {
-      return { icon: <ArrowUp className="text-green-500" />, color: "text-green-500" };
+    const difference = currentPrice - previousPrice;
+
+    if (difference > 0) {
+      return { icon: <ArrowUp className="h-4 w-4 text-green-500" />, color: "text-green-500", difference };
     }
-    if (currentPrice < previousPrice) {
-      return { icon: <ArrowDown className="text-red-500" />, color: "text-red-500" };
+    if (difference < 0) {
+      return { icon: <ArrowDown className="h-4 w-4 text-red-500" />, color: "text-red-500", difference };
     }
-    return { icon: <Minus className="text-muted-foreground" />, color: "text-muted-foreground" };
+    return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: 0 };
   };
 
   return (
@@ -47,7 +49,7 @@ export function PriceHistory({ history }: PriceHistoryProps) {
           </TableHeader>
           <TableBody>
             {history.map((entry, index) => {
-              const { icon, color } = getTrend(index);
+              const { icon, color, difference } = getTrend(index);
               const isLatest = index === 0;
               return (
                 <TableRow key={entry.lastUpdated.toString()}>
@@ -58,8 +60,13 @@ export function PriceHistory({ history }: PriceHistoryProps) {
                   <TableCell className="text-left text-muted-foreground">
                     {format(new Date(entry.lastUpdated), "MMM d, h:mm a")}
                   </TableCell>
-                  <TableCell className="flex justify-end items-center">
+                  <TableCell className="flex justify-end items-center gap-1">
                     {icon}
+                    {difference !== null && (
+                      <span className={`text-xs ${color}`}>
+                        {difference !== 0 ? `₹${Math.abs(difference).toLocaleString('en-IN')}`: ''}
+                      </span>
+                    )}
                   </TableCell>
                 </TableRow>
               );
