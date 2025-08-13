@@ -59,6 +59,11 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
     }
     return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: 0 };
   };
+  
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <Card>
@@ -72,6 +77,7 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
               <TableHead className="text-left">Price</TableHead>
 
               <TableHead className="text-left">Date</TableHead>
+
               <TableHead className="text-right">Trend</TableHead>
             </TableRow>
           </TableHeader>
@@ -86,7 +92,7 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
                     {isLatest && <Badge variant="outline" className="ml-2">Latest</Badge>}
                   </TableCell>
                   <TableCell className="text-left text-muted-foreground">
-                    {format(new Date(entry.lastUpdated), "MMM d, h:mm a")}
+                    {isClient ? format(new Date(entry.lastUpdated), "MMM d, h:mm a") : ''}
                   </TableCell>
                   <TableCell className="flex justify-end items-center gap-1">
                     {icon}
