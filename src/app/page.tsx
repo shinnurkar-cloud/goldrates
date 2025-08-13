@@ -31,7 +31,7 @@ export default function Home() {
         </header>
 
         <MessageBoard initialMessage={message} apiKey={apiKey} />
-        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} apiKey={apiKey} />
+        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} apiKey={apiKey} />
         <PriceHistory initialHistory={history} apiKey={apiKey} />
 
         <div className="w-full pt-4">

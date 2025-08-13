@@ -38,17 +38,19 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
     
     // We don't need the API key for history, but this ensures polling starts
     // at the same time as the price display.
-    const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
-    return () => clearInterval(interval);
+    if(apiKey){
+      const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
+      return () => clearInterval(interval);
+    }
 
   }, [history, apiKey]);
 
-  const getTrend = (index: number) => {
-    if (index >= history.length - 1) {
+  const getTrend = (index: number, fullHistory: PriceHistoryEntry[]) => {
+    if (index === 0) {
       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
-    const currentPrice = history[index].price;
-    const previousPrice = history[index + 1].price;
+    const currentPrice = fullHistory[index].price;
+    const previousPrice = fullHistory[index - 1].price;
     const difference = currentPrice - previousPrice;
 
     if (difference > 0) {
@@ -65,6 +67,8 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
     setIsClient(true);
   }, []);
 
+  const reversedHistory = [...history].reverse();
+
   return (
     <Card>
       <CardHeader>
@@ -80,12 +84,12 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history.map((entry, index) => {
-              const { icon, color, difference } = getTrend(index);
+            {reversedHistory.map((entry, index) => {
+              const { icon, color, difference } = getTrend(history.length - 1 - index, history);
               const isLatest = index === 0;
               return (
                 <TableRow key={entry.lastUpdated.toString()}>
-                  <TableCell className={`text-left font-medium ${color}`}>
+                  <TableCell className={`text-left font-medium ${isLatest ? 'text-primary' : color}`}>
                     ₹{entry.price.toLocaleString('en-IN')}
                     {isLatest && <Badge variant="outline" className="ml-2">Latest</Badge>}
                   </TableCell>
