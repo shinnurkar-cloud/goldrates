@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Kalaburagi Price',
-  description: 'Live Gold Prices in Kalaburagi.',
+  title: 'Kalaburagi Saraf Bazar Price',
+  description: 'Live Gold Prices in Kalaburagi Saraf Bazar.',
 };
 
 export default function RootLayout({

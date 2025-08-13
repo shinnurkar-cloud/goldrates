@@ -21,10 +21,10 @@ export default function Home() {
             <Gem className="w-10 h-10" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
-            Kalaburagi Price
+            Kalaburagi Saraf Bazar Price
           </h1>
           <p className="text-muted-foreground">
-            Live Gold Prices in Kalaburagi.
+            Live Gold Prices in Kalaburagi Saraf Bazar.
           </p>
         </header>
 
@@ -37,7 +37,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Kalaburagi Price. All rights reserved.
+          &copy; {new Date().getFullYear()} Kalaburagi Saraf Bazar Price. All rights reserved.
         </p>
       </footer>
     </div>
