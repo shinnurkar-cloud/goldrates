@@ -66,6 +66,7 @@ export function AdminPanel() {
 
   const updatePriceForm = useForm<z.infer<typeof updatePriceSchema>>({
     resolver: zodResolver(updatePriceSchema),
+    defaultValues: { price: '' as any },
   });
 
   const changePasswordForm = useForm<z.infer<typeof changePasswordSchema>>({
@@ -104,7 +105,7 @@ export function AdminPanel() {
       const result = await updatePriceAction(formData);
       if (result.success) {
         toast({ title: 'Success!', description: result.message });
-        updatePriceForm.reset({ price: undefined });
+        updatePriceForm.reset({ price: '' as any });
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.message });
       }
