@@ -41,7 +41,7 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
     const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
     return () => clearInterval(interval);
 
-  }, [history]);
+  }, [history, apiKey]);
 
   const getTrend = (index: number) => {
     if (index >= history.length - 1) {
@@ -75,9 +75,7 @@ export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="text-left">Price</TableHead>
-
               <TableHead className="text-left">Date</TableHead>
-
               <TableHead className="text-right">Trend</TableHead>
             </TableRow>
           </TableHeader>
