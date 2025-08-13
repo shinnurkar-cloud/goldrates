@@ -1,7 +1,8 @@
 import { GoldPriceDisplay } from '@/components/gold-price-display';
 import { AdminPanel } from '@/components/admin-panel';
-import { getGoldPrice } from '@/lib/data';
+import { getGoldPrice, getGoldPriceHistory } from '@/lib/data';
 import { Gem } from 'lucide-react';
+import { PriceHistory } from '@/components/price-history';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -9,6 +10,7 @@ export const revalidate = 0;
 
 export default function Home() {
   const { price, lastUpdated } = getGoldPrice();
+  const history = getGoldPriceHistory();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 font-body">
@@ -26,6 +28,7 @@ export default function Home() {
         </header>
 
         <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated.toISOString()} />
+        <PriceHistory history={history} />
 
         <div className="w-full pt-4">
           <AdminPanel />
