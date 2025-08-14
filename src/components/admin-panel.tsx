@@ -37,7 +37,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { ForgotPasswordDialog } from './forgot-password-dialog';
-import { getCarouselImages } from '@/lib/data';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required.'),
@@ -74,19 +73,21 @@ export function AdminPanel() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
   const [currentImages, setCurrentImages] = useState<string[]>([]);
-  
-  useEffect(() => {
-    if (loggedInUser === 'admin2') {
-      // In a real app, this would be an API call.
-      // For this implementation, we can call a function that gets the initial state.
-      // This is a bit of a workaround because we can't call server components directly.
-      const fetchImages = async () => {
-        const res = await fetch('/api/images'); // Let's assume we create this API route
+
+  const fetchImages = async () => {
+    try {
+        const res = await fetch('/api/images');
         if (res.ok) {
             const data = await res.json();
             setCurrentImages(data.images);
         }
-      }
+    } catch (error) {
+        console.error("Failed to fetch images", error);
+    }
+  };
+
+  useEffect(() => {
+    if (loggedInUser === 'admin2') {
       fetchImages();
     }
   }, [loggedInUser]);
@@ -166,13 +167,6 @@ export function AdminPanel() {
       if (result.success) {
         toast({ title: 'Success!', description: result.message });
         setLoggedInUser(result.user as string);
-        if (result.user === 'admin2') {
-            const res = await fetch('/api/images');
-            if (res.ok) {
-                const data = await res.json();
-                setCurrentImages(data.images);
-            }
-        }
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.message });
         loginForm.setValue('password', '');
@@ -187,6 +181,7 @@ export function AdminPanel() {
     changePasswordForm.reset();
     updateMessageForm.reset();
     updateImagesForm.reset();
+    setCurrentImages([]);
     toast({ title: 'Logged Out', description: 'You have been logged out successfully.' });
   };
 
@@ -262,12 +257,7 @@ export function AdminPanel() {
             if (result.success) {
                 toast({ title: 'Success!', description: result.message });
                 updateImagesForm.reset();
-                // Refresh the images
-                const res = await fetch('/api/images');
-                if (res.ok) {
-                    const data = await res.json();
-                    setCurrentImages(data.images);
-                }
+                await fetchImages();
             } else {
                 toast({ variant: 'destructive', title: 'Error', description: result.message });
             }
@@ -284,11 +274,7 @@ const handleDeleteImage = (index: number) => {
         const result = await deleteImageAction(formData);
         if (result.success) {
             toast({ title: 'Success!', description: result.message });
-            const res = await fetch('/api/images');
-            if (res.ok) {
-                const data = await res.json();
-                setCurrentImages(data.images);
-            }
+            await fetchImages();
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.message });
         }
