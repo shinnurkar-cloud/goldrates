@@ -35,7 +35,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus, Image as ImageIcon, X } from 'lucide-react';
 import { ForgotPasswordDialog } from './forgot-password-dialog';
 
 const loginSchema = z.object({
@@ -371,7 +371,7 @@ const handleDeleteImage = (index: number) => {
                             {currentImages.map((src, index) => {
                                 const isPlaceholder = src.startsWith('https://placehold.co');
                                 return (
-                                  <div key={index} className="relative group">
+                                  <div key={index} className="relative">
                                       <Image
                                           src={src}
                                           alt={`Current image ${index + 1}`}
@@ -383,11 +383,11 @@ const handleDeleteImage = (index: number) => {
                                           <Button
                                               variant="destructive"
                                               size="icon"
-                                              className="absolute top-1 right-1 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                              className="absolute top-1 right-1 h-6 w-6 p-1 bg-black/50 hover:bg-black/75"
                                               onClick={() => handleDeleteImage(index)}
                                               disabled={isPending}
                                           >
-                                              <Trash2 className="h-4 w-4" />
+                                              <X className="h-4 w-4" />
                                           </Button>
                                       )}
                                   </div>
