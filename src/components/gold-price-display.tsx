@@ -105,7 +105,7 @@ export function GoldPriceDisplay({ initialPrice, initialLastUpdated, initialHist
   return (
     <Card className="w-full text-center shadow-lg border-primary/20 bg-card overflow-hidden">
       <CardHeader className="bg-primary/5 p-4">
-        <CardTitle className="text-base font-medium text-primary-foreground/80">
+        <CardTitle className="text-base font-medium text-foreground">
           Gold Price (24k)
         </CardTitle>
         <CardDescription className="text-sm">per 10 grams</CardDescription>
