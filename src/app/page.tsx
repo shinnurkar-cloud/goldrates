@@ -20,11 +20,11 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-foreground p-4 font-body">
       <main className="w-full max-w-md mx-auto space-y-8 flex flex-col flex-grow justify-center">
-        <header className="text-center space-y-2">
+        <header className="text-center space-y-4">
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
             <Gem className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
             Kalaburagi Saraf Bazar Price
           </h1>
           <p className="text-muted-foreground">
