@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { updateGoldPrice, updateMessage, updateCarouselImages } from '@/lib/data';
+import { updateGoldPrice, updateMessage, getCarouselImages, updateCarouselImages } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 
 // In a real app, these would be in a secure database and environment variables.
@@ -162,18 +162,39 @@ export async function updateImagesAction(formData: FormData) {
         if (!parsed.success) {
             return { success: false, message: "Invalid image data." };
         }
+        
+        const currentImages = getCarouselImages();
+        const newImages = Object.values(parsed.data).map((dataUri, index) => {
+            return (dataUri && dataUri.startsWith('data:image')) ? dataUri : currentImages[index];
+        });
 
-        const images = Object.values(parsed.data).filter(dataUri => dataUri && dataUri.startsWith('data:image')) as string[];
-
-        const finalImages = [...images];
-        while (finalImages.length < 5) {
-            finalImages.push('https://placehold.co/600x400.png');
-        }
-
-        updateCarouselImages(finalImages.slice(0, 5));
+        updateCarouselImages(newImages.slice(0, 5));
         revalidatePath('/');
         return { success: true, message: 'Images updated successfully!' };
     } catch (error) {
         return { success: false, message: 'An unexpected error occurred.' };
     }
+}
+
+const deleteImageSchema = z.object({
+  index: z.coerce.number().int().min(0).max(4),
+});
+
+export async function deleteImageAction(formData: FormData) {
+  try {
+    const parsed = deleteImageSchema.safeParse(Object.fromEntries(formData.entries()));
+
+    if (!parsed.success) {
+      return { success: false, message: "Invalid image index." };
+    }
+
+    const { index } = parsed.data;
+    const currentImages = getCarouselImages();
+    currentImages[index] = "https://placehold.co/600x400.png";
+    updateCarouselImages(currentImages);
+    revalidatePath('/');
+    return { success: true, message: `Image ${index + 1} deleted successfully.` };
+  } catch (error) {
+    return { success: false, message: 'An unexpected error occurred.' };
+  }
 }

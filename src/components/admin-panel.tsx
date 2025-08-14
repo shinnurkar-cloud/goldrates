@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useEffect, useTransition, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 import {
   loginAction,
   updatePriceAction,
   changePasswordAction,
   updateMessageAction,
   updateImagesAction,
+  deleteImageAction
 } from '@/app/actions';
 
 import { Button } from '@/components/ui/button';
@@ -33,8 +35,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus, Image as ImageIcon } from 'lucide-react';
+import { Loader2, LogIn, KeyRound, RefreshCcw, LogOut, UserCog, MessageSquarePlus, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { ForgotPasswordDialog } from './forgot-password-dialog';
+import { getCarouselImages } from '@/lib/data';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required.'),
@@ -63,18 +66,33 @@ const changePasswordSchema = z
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-// This check ensures the code runs only in the browser
 const isClient = typeof window !== 'undefined';
-
 
 export function AdminPanel() {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
+  
+  useEffect(() => {
+    if (loggedInUser === 'admin2') {
+      // In a real app, this would be an API call.
+      // For this implementation, we can call a function that gets the initial state.
+      // This is a bit of a workaround because we can't call server components directly.
+      const fetchImages = async () => {
+        const res = await fetch('/api/images'); // Let's assume we create this API route
+        if (res.ok) {
+            const data = await res.json();
+            setCurrentImages(data.images);
+        }
+      }
+      fetchImages();
+    }
+  }, [loggedInUser]);
+
 
   const updateImagesSchema = useMemo(() => {
-    // Define a schema that works on the server (no FileList)
     const baseSchema = z.object({
         image1: z.any(),
         image2: z.any(),
@@ -83,7 +101,6 @@ export function AdminPanel() {
         image5: z.any(),
     });
 
-    // If on the client, refine the schema with FileList validation
     if (!isClient) {
         return baseSchema;
     }
@@ -140,7 +157,6 @@ export function AdminPanel() {
     },
   });
 
-
   const handleLogin = (values: z.infer<typeof loginSchema>) => {
     startTransition(async () => {
       const formData = new FormData();
@@ -150,6 +166,13 @@ export function AdminPanel() {
       if (result.success) {
         toast({ title: 'Success!', description: result.message });
         setLoggedInUser(result.user as string);
+        if (result.user === 'admin2') {
+            const res = await fetch('/api/images');
+            if (res.ok) {
+                const data = await res.json();
+                setCurrentImages(data.images);
+            }
+        }
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.message });
         loginForm.setValue('password', '');
@@ -224,20 +247,27 @@ export function AdminPanel() {
         };
 
         try {
-            for (const [key, fileList] of Object.entries(values)) {
+            const imagePromises = Object.entries(values).map(async ([key, fileList]) => {
                 if (fileList && fileList.length > 0) {
                     const dataUri = await fileToDataUri(fileList[0]);
                     formData.append(key, dataUri);
                 } else {
                     formData.append(key, '');
                 }
-            }
-
+            });
+            await Promise.all(imagePromises);
+            
             const result = await updateImagesAction(formData);
 
             if (result.success) {
                 toast({ title: 'Success!', description: result.message });
                 updateImagesForm.reset();
+                // Refresh the images
+                const res = await fetch('/api/images');
+                if (res.ok) {
+                    const data = await res.json();
+                    setCurrentImages(data.images);
+                }
             } else {
                 toast({ variant: 'destructive', title: 'Error', description: result.message });
             }
@@ -246,6 +276,24 @@ export function AdminPanel() {
         }
     });
 };
+
+const handleDeleteImage = (index: number) => {
+    startTransition(async () => {
+        const formData = new FormData();
+        formData.append('index', index.toString());
+        const result = await deleteImageAction(formData);
+        if (result.success) {
+            toast({ title: 'Success!', description: result.message });
+            const res = await fetch('/api/images');
+            if (res.ok) {
+                const data = await res.json();
+                setCurrentImages(data.images);
+            }
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.message });
+        }
+    });
+}
 
   if (loggedInUser) {
     return (
@@ -330,38 +378,68 @@ export function AdminPanel() {
                 <TabsTrigger value="change-password">Change Password</TabsTrigger>
               </TabsList>
               <TabsContent value="update-images" className="pt-4">
-                <Form {...updateImagesForm}>
-                    <form onSubmit={updateImagesForm.handleSubmit(handleUpdateImages)} className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((i) => {
-                            const fieldName = `image${i}` as const;
-                            return (
-                                <FormField
-                                    key={i}
-                                    control={updateImagesForm.control}
-                                    name={fieldName}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Image {i}</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    disabled={isPending}
-                                                    onChange={(e) => field.onChange(e.target.files)}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                 <div className="space-y-4">
+                    <div>
+                        <h4 className="text-sm font-medium mb-2">Current Images</h4>
+                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                            {currentImages.map((src, index) => (
+                                <div key={index} className="relative group">
+                                    <Image
+                                        src={src}
+                                        alt={`Current image ${index + 1}`}
+                                        width={100}
+                                        height={100}
+                                        className="rounded-md object-cover w-full aspect-square"
+                                    />
+                                    { !src.includes('placehold.co') && (
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            className="absolute top-1 right-1 h-7 w-7 p-0"
+                                            onClick={() => handleDeleteImage(index)}
+                                            disabled={isPending}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                     )}
-                                />
-                            );
-                        })}
-                        <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageIcon className="mr-2 h-4 w-4" />}
-                            Update Images
-                        </Button>
-                    </form>
-                </Form>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <Form {...updateImagesForm}>
+                        <form onSubmit={updateImagesForm.handleSubmit(handleUpdateImages)} className="space-y-4 border-t pt-4">
+                             <h4 className="text-sm font-medium">Upload New Images</h4>
+                            {[1, 2, 3, 4, 5].map((i) => {
+                                const fieldName = `image${i}` as const;
+                                return (
+                                    <FormField
+                                        key={i}
+                                        control={updateImagesForm.control}
+                                        name={fieldName}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Replace Image {i}</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        disabled={isPending}
+                                                        onChange={(e) => field.onChange(e.target.files)}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                );
+                            })}
+                            <Button type="submit" className="w-full" disabled={isPending}>
+                                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageIcon className="mr-2 h-4 w-4" />}
+                                Update Images
+                            </Button>
+                        </form>
+                    </Form>
+                </div>
               </TabsContent>
               <TabsContent value="change-password" className="pt-4">
                 <Form {...changePasswordForm}>
