@@ -368,28 +368,31 @@ const handleDeleteImage = (index: number) => {
                     <div>
                         <h4 className="text-sm font-medium mb-2">Current Images</h4>
                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                            {currentImages.map((src, index) => (
-                                <div key={index} className="relative group">
-                                    <Image
-                                        src={src}
-                                        alt={`Current image ${index + 1}`}
-                                        width={100}
-                                        height={100}
-                                        className="rounded-md object-cover w-full aspect-square"
-                                    />
-                                    { !src.includes('placehold.co') && (
-                                        <Button
-                                            variant="destructive"
-                                            size="icon"
-                                            className="absolute top-1 right-1 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={() => handleDeleteImage(index)}
-                                            disabled={isPending}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
+                            {currentImages.map((src, index) => {
+                                const isPlaceholder = src.startsWith('https://placehold.co');
+                                return (
+                                  <div key={index} className="relative group">
+                                      <Image
+                                          src={src}
+                                          alt={`Current image ${index + 1}`}
+                                          width={100}
+                                          height={100}
+                                          className="rounded-md object-cover w-full aspect-square"
+                                      />
+                                      {!isPlaceholder && (
+                                          <Button
+                                              variant="destructive"
+                                              size="icon"
+                                              className="absolute top-1 right-1 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                              onClick={() => handleDeleteImage(index)}
+                                              disabled={isPending}
+                                          >
+                                              <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                      )}
+                                  </div>
+                                );
+                            })}
                         </div>
                     </div>
                     <Form {...updateImagesForm}>
