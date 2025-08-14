@@ -36,7 +36,7 @@ export function ImageCarousel({ initialImages }: ImageCarouselProps) {
                     alt={`Carousel image ${index + 1}`}
                     fill
                     className="rounded-md object-cover"
-                    data-ai-hint="advertisement product"
+                    data-ai-hint="gold bars"
                   />
                 </div>
               </CarouselItem>
