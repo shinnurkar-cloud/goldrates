@@ -147,11 +147,11 @@ export async function updateMessageAction(formData: FormData) {
 }
 
 const updateImagesSchema = z.object({
-  image1: z.string().url().optional().or(z.literal('')),
-  image2: z.string().url().optional().or(z.literal('')),
-  image3: z.string().url().optional().or(z.literal('')),
-  image4: z.string().url().optional().or(z.literal('')),
-  image5: z.string().url().optional().or(z.literal('')),
+  image1: z.string().optional(),
+  image2: z.string().optional(),
+  image3: z.string().optional(),
+  image4: z.string().optional(),
+  image5: z.string().optional(),
 });
 
 
@@ -160,12 +160,11 @@ export async function updateImagesAction(formData: FormData) {
         const parsed = updateImagesSchema.safeParse(Object.fromEntries(formData.entries()));
 
         if (!parsed.success) {
-            return { success: false, message: "Please enter valid URLs." };
+            return { success: false, message: "Invalid image data." };
         }
 
-        const images = Object.values(parsed.data).filter(url => url && url.length > 0) as string[];
+        const images = Object.values(parsed.data).filter(dataUri => dataUri && dataUri.startsWith('data:image')) as string[];
 
-        // Fill up to 5 images with placeholders if not provided
         const finalImages = [...images];
         while (finalImages.length < 5) {
             finalImages.push('https://placehold.co/600x400.png');

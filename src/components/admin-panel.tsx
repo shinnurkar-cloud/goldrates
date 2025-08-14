@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -60,13 +60,11 @@ const changePasswordSchema = z
     path: ['confirmPassword'],
   });
 
-const updateImagesSchema = z.object({
-  image1: z.string().url('Please enter a valid URL.').or(z.literal('')),
-  image2: z.string().url('Please enter a valid URL.').or(z.literal('')),
-  image3: z.string().url('Please enter a valid URL.').or(z.literal('')),
-  image4: z.string().url('Please enter a valid URL.').or(z.literal('')),
-  image5: z.string().url('Please enter a valid URL.').or(z.literal('')),
-});
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+// This check ensures the code runs only in the browser
+const isClient = typeof window !== 'undefined';
 
 
 export function AdminPanel() {
@@ -74,6 +72,42 @@ export function AdminPanel() {
   const [isPending, startTransition] = useTransition();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
+
+  const updateImagesSchema = useMemo(() => {
+    // Define a schema that works on the server (no FileList)
+    const baseSchema = z.object({
+        image1: z.any(),
+        image2: z.any(),
+        image3: z.any(),
+        image4: z.any(),
+        image5: z.any(),
+    });
+
+    // If on the client, refine the schema with FileList validation
+    if (!isClient) {
+        return baseSchema;
+    }
+
+    const imageFieldSchema = z.instanceof(FileList)
+        .optional()
+        .refine(
+            (files) => !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE,
+            `Max file size is 5MB.`
+        )
+        .refine(
+            (files) => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0].type),
+            "Only .jpg, .jpeg, .png and .webp formats are supported."
+        );
+
+    return z.object({
+        image1: imageFieldSchema,
+        image2: imageFieldSchema,
+        image3: imageFieldSchema,
+        image4: imageFieldSchema,
+        image5: imageFieldSchema,
+    });
+  }, []);
+
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -97,7 +131,13 @@ export function AdminPanel() {
   
   const updateImagesForm = useForm<z.infer<typeof updateImagesSchema>>({
     resolver: zodResolver(updateImagesSchema),
-    defaultValues: { image1: '', image2: '', image3: '', image4: '', image5: '' },
+    defaultValues: {
+      image1: undefined,
+      image2: undefined,
+      image3: undefined,
+      image4: undefined,
+      image5: undefined,
+    },
   });
 
 
@@ -170,20 +210,42 @@ export function AdminPanel() {
     });
   };
   
-  const handleUpdateImages = (values: z.infer<typeof updateImagesSchema>) => {
+  const handleUpdateImages = async (values: z.infer<typeof updateImagesSchema>) => {
     startTransition(async () => {
         const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
-        const result = await updateImagesAction(formData);
-        if (result.success) {
-            toast({ title: 'Success!', description: result.message });
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.message });
+
+        const fileToDataUri = (file: File): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        };
+
+        try {
+            for (const [key, fileList] of Object.entries(values)) {
+                if (fileList && fileList.length > 0) {
+                    const dataUri = await fileToDataUri(fileList[0]);
+                    formData.append(key, dataUri);
+                } else {
+                    formData.append(key, '');
+                }
+            }
+
+            const result = await updateImagesAction(formData);
+
+            if (result.success) {
+                toast({ title: 'Success!', description: result.message });
+                updateImagesForm.reset();
+            } else {
+                toast({ variant: 'destructive', title: 'Error', description: result.message });
+            }
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to read files.' });
         }
     });
-  };
+};
 
   if (loggedInUser) {
     return (
@@ -270,17 +332,30 @@ export function AdminPanel() {
               <TabsContent value="update-images" className="pt-4">
                 <Form {...updateImagesForm}>
                     <form onSubmit={updateImagesForm.handleSubmit(handleUpdateImages)} className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <FormField key={i} control={updateImagesForm.control} name={`image${i}` as any} render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Image {i} URL</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="https://example.com/image.png" {...field} disabled={isPending} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                        ))}
+                        {[1, 2, 3, 4, 5].map((i) => {
+                            const fieldName = `image${i}` as const;
+                            return (
+                                <FormField
+                                    key={i}
+                                    control={updateImagesForm.control}
+                                    name={fieldName}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Image {i}</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    disabled={isPending}
+                                                    onChange={(e) => field.onChange(e.target.files)}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            );
+                        })}
                         <Button type="submit" className="w-full" disabled={isPending}>
                             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageIcon className="mr-2 h-4 w-4" />}
                             Update Images
