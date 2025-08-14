@@ -27,7 +27,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
             Kalaburagi Saraf Bazar Price
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-primary">
             Live Gold Prices in Kalaburagi Saraf Bazar.
           </p>
         </header>
