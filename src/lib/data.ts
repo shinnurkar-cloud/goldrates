@@ -10,6 +10,14 @@ let goldPriceHistory: GoldPriceHistoryEntry[] = [
   { price: 72430, lastUpdated: new Date() }
 ];
 let message: string = 'Welcome! All prices are for 24 Karat Gold per 10 grams.';
+let carouselImages: string[] = [
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+];
+
 
 export const getMessage = (): { message: string } => {
   return { message };
@@ -19,6 +27,13 @@ export const updateMessage = (newMessage: string): void => {
   message = newMessage;
 };
 
+export const getCarouselImages = (): string[] => {
+    return [...carouselImages];
+};
+
+export const updateCarouselImages = (newImages: string[]): void => {
+    carouselImages = newImages;
+};
 
 export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
   // Return a copy with ISO strings to ensure consistency between server and client

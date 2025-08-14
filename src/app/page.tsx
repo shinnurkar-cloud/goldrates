@@ -1,9 +1,10 @@
 import { GoldPriceDisplay } from '@/components/gold-price-display';
 import { AdminPanel } from '@/components/admin-panel';
-import { getGoldPrice, getGoldPriceHistory, getMessage } from '@/lib/data';
+import { getGoldPrice, getGoldPriceHistory, getMessage, getCarouselImages } from '@/lib/data';
 import { Gem } from 'lucide-react';
 import { PriceHistory } from '@/components/price-history';
 import { MessageBoard } from '@/components/message-board';
+import { ImageCarousel } from '@/components/image-carousel';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -13,6 +14,7 @@ export default function Home() {
   const { price, lastUpdated } = getGoldPrice();
   const history = getGoldPriceHistory();
   const { message } = getMessage();
+  const images = getCarouselImages();
   const apiKey = process.env.GOLD_API_KEY;
 
   return (
@@ -30,6 +32,7 @@ export default function Home() {
           </p>
         </header>
 
+        <ImageCarousel initialImages={images} />
         <MessageBoard initialMessage={message} apiKey={apiKey} />
         <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} apiKey={apiKey} />
         <PriceHistory initialHistory={history} apiKey={apiKey} />
