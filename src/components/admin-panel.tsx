@@ -73,8 +73,10 @@ export function AdminPanel() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const [isFetchingImages, setIsFetchingImages] = useState(false);
 
   const fetchImages = async () => {
+    setIsFetchingImages(true);
     try {
         const res = await fetch('/api/images');
         if (res.ok) {
@@ -83,6 +85,9 @@ export function AdminPanel() {
         }
     } catch (error) {
         console.error("Failed to fetch images", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load images.'});
+    } finally {
+      setIsFetchingImages(false);
     }
   };
 
@@ -94,16 +99,14 @@ export function AdminPanel() {
 
 
   const updateImagesSchema = useMemo(() => {
-    const baseSchema = z.object({
-        image1: z.any(),
-        image2: z.any(),
-        image3: z.any(),
-        image4: z.any(),
-        image5: z.any(),
-    });
-
     if (!isClient) {
-        return baseSchema;
+        return z.object({
+            image1: z.any(),
+            image2: z.any(),
+            image3: z.any(),
+            image4: z.any(),
+            image5: z.any(),
+        });
     }
 
     const imageFieldSchema = z.instanceof(FileList)
@@ -369,7 +372,7 @@ const handleDeleteImage = (index: number) => {
                         <h4 className="text-sm font-medium mb-2">Current Images</h4>
                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                             {currentImages.map((src, index) => {
-                                const isPlaceholder = src.startsWith('https://placehold.co');
+                                const isPlaceholder = src === "https://placehold.co/600x400.png";
                                 return (
                                   <div key={index} className="relative">
                                       <Image

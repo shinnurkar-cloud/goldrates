@@ -170,6 +170,7 @@ export async function updateImagesAction(formData: FormData) {
 
         updateCarouselImages(newImages.slice(0, 5));
         revalidatePath('/');
+        revalidatePath('/api/images');
         return { success: true, message: 'Images updated successfully!' };
     } catch (error) {
         return { success: false, message: 'An unexpected error occurred.' };
@@ -193,6 +194,7 @@ export async function deleteImageAction(formData: FormData) {
     currentImages[index] = "https://placehold.co/600x400.png";
     updateCarouselImages(currentImages);
     revalidatePath('/');
+    revalidatePath('/api/images');
     return { success: true, message: `Image ${index + 1} deleted successfully.` };
   } catch (error) {
     return { success: false, message: 'An unexpected error occurred.' };
