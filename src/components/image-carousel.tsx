@@ -23,9 +23,8 @@ export function ImageCarousel({ initialImages }: ImageCarouselProps) {
   );
 
   useEffect(() => {
-    // This is a placeholder for potential real-time updates via polling or websockets
-    // For now, it just sets the initial state. A real app might fetch updated images here.
-  }, []);
+    setImages(initialImages);
+  }, [initialImages]);
 
   return (
     <Card>
