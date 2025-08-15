@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Kalaburagi Saraf Bazar Price',
+  title: 'SDR Bazar Bhav',
   description: 'Live Gold Prices in Kalaburagi Saraf Bazar.',
   manifest: "/manifest.json",
 };
