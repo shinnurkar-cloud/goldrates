@@ -26,9 +26,11 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
             Kalaburagi Saraf Bazar Price
           </h1>
-          <p className="text-primary">
-            Live Gold Prices in Kalaburagi Saraf Bazar.
-          </p>
+          <div className="overflow-x-hidden whitespace-nowrap">
+            <p className="text-primary inline-block animate-marquee">
+              Live Gold Prices in Kalaburagi Saraf Bazar.
+            </p>
+          </div>
         </header>
 
         <ImageCarousel initialImages={images} />
@@ -42,7 +44,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Shinnurkar Kalaburagi Saraf Bazar Price. All rights reserved.
+          &copy; {new Date().getFullYear()} Kalaburagi Saraf Bazar Price. Shinnurkar All rights reserved.
         </p>
       </footer>
     </div>
