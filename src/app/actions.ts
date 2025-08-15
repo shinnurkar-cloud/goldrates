@@ -55,6 +55,7 @@ export async function updatePriceAction(formData: FormData) {
 
     updateGoldPrice(parsed.data.price);
     revalidatePath('/'); // This will re-render the page with the new price
+    revalidatePath('/api/price'); // This will clear the cache for the API route
     return { success: true, message: `Gold price updated to ₹${parsed.data.price.toLocaleString('en-IN')}` };
   } catch (error) {
     return { success: false, message: 'An unexpected error occurred.' };
