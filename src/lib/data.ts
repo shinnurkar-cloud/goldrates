@@ -7,7 +7,7 @@ type GoldPriceHistoryEntry = {
 // In a real application, you would use a database like Firestore, PostgreSQL, etc.
 // This array lives only for the lifetime of the server process.
 let goldPriceHistory: GoldPriceHistoryEntry[] = [
-  { price: 72430, lastUpdated: new Date() }
+  { price: 100500, lastUpdated: new Date() }
 ];
 let message: string = 'Welcome! All prices are for 24 Karat Gold per 10 grams.';
 let carouselImages: string[] = [
@@ -44,7 +44,7 @@ export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
 export const updateGoldPrice = (newPrice: number): void => {
   goldPriceHistory.push({
     price: newPrice,
-    lastUpdated: new Date(),
+    lastUpdated: new D_ate(),
   });
 
   // Keep only the last 5 updates
@@ -56,7 +56,7 @@ export const updateGoldPrice = (newPrice: number): void => {
 export const getGoldPrice = (): GoldPriceHistoryEntry => {
     if (goldPriceHistory.length === 0) {
         // This is a fallback for the edge case where the server has reloaded and no price has been set yet.
-        return { price: 72430, lastUpdated: new Date().toISOString() as any };
+        return { price: 100500, lastUpdated: new Date().toISOString() as any };
     }
     const latest = goldPriceHistory[goldPriceHistory.length - 1];
     return {...latest, lastUpdated: latest.lastUpdated.toISOString() as any};
