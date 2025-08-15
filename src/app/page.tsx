@@ -23,7 +23,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
             <Gem className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
             Kalaburagi Saraf Bazar Price
           </h1>
           <p className="text-primary">
@@ -42,7 +42,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Kalaburagi Saraf Bazar Price. All rights reserved.
+          shinnurkar &copy; {new Date().getFullYear()} Kalaburagi Saraf Bazar Price. All rights reserved.
         </p>
       </footer>
     </div>
