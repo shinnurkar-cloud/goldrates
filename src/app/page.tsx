@@ -25,7 +25,7 @@ export default function Home() {
             <Gem className="w-10 h-10" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-headline bg-gradient-to-r from-yellow-400 to-primary bg-clip-text text-transparent">
-            SDR GOLD PRICE
+            KALABURAGI GOLD PRICE
           </h1>
           <div className="overflow-x-hidden whitespace-nowrap">
             <p className="text-primary inline-block animate-marquee">
@@ -46,7 +46,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} SDR GOLD PRICE. Shinnurkar All rights reserved.
+          &copy; {new Date().getFullYear()} KALABURAGI GOLD PRICE. Shinnurkar All rights reserved.
         </p>
       </footer>
     </div>

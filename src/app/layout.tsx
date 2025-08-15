@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'SDR GOLD PRICE',
+  title: 'KALABURAGI GOLD PRICE',
   description: 'Live Gold Prices in Kalaburagi Saraf Bazar.',
   manifest: "/manifest.json",
 };
