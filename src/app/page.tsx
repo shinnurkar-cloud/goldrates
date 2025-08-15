@@ -24,7 +24,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
             <Gem className="w-10 h-10" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-wider bg-gradient-to-r from-yellow-400 to-primary bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-wider bg-gradient-to-r from-yellow-400 to-primary bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
             KALABURAGI GOLD PRICE
           </h1>
           <div className="overflow-x-hidden whitespace-nowrap">
