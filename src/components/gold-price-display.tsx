@@ -18,9 +18,9 @@ type GoldPriceDisplayProps = {
 };
 
 export function GoldPriceDisplay({ initialPrice, initialLastUpdated, initialHistory, apiKey }: GoldPriceDisplayProps) {
-  const [price, setPrice] = useState(initialPrice);
-  const [lastUpdated, setLastUpdated] = useState(initialLastUpdated);
-  const [history, setHistory] = useState(initialHistory);
+  const [price] = useState(initialPrice);
+  const [lastUpdated] = useState(initialLastUpdated);
+  const [history] = useState(initialHistory);
   const [isAnimating, setIsAnimating] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
 
@@ -39,56 +39,13 @@ export function GoldPriceDisplay({ initialPrice, initialLastUpdated, initialHist
     }
   }, [price, initialPrice]);
 
-  useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        const res = await fetch('/api/price', {
-          headers: {
-            'Authorization': `Bearer ${apiKey}`
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.price !== price) {
-            setPrice(data.price);
-            setLastUpdated(data.lastUpdated);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch price:', error);
-      }
-    };
-    
-    const fetchHistory = async () => {
-        try {
-            const res = await fetch('/api/price/history');
-            if (res.ok) {
-                const data = await res.json();
-                if (JSON.stringify(data) !== JSON.stringify(history)) {
-                    setHistory(data);
-                }
-            }
-        } catch (error) {
-            console.error('Failed to fetch price history:', error);
-        }
-    };
-
-    if (apiKey) {
-      const priceInterval = setInterval(fetchPrice, 5000); 
-      const historyInterval = setInterval(fetchHistory, 5000);
-      return () => {
-        clearInterval(priceInterval);
-        clearInterval(historyInterval);
-      }
-    }
-  }, [price, apiKey, history]);
-
   const getTrend = () => {
     if (history.length < 2) {
       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
-    const currentPrice = history[history.length - 1].price;
-    const previousPrice = history[history.length - 2].price;
+    // Use the initial props for trend calculation as state won't update without polling
+    const currentPrice = initialHistory[initialHistory.length - 1].price;
+    const previousPrice = initialHistory[initialHistory.length - 2].price;
     const difference = currentPrice - previousPrice;
 
     if (difference > 0) {
@@ -105,7 +62,7 @@ export function GoldPriceDisplay({ initialPrice, initialLastUpdated, initialHist
   return (
     <Card className="w-full text-center shadow-lg border-primary/20 bg-card overflow-hidden">
       <CardHeader className="bg-primary/5 p-4">
-        <CardTitle className="text-base font-medium text-foreground">
+        <CardTitle className="text-base font-medium text-white">
           Gold Price (24k)
         </CardTitle>
         <CardDescription className="text-sm">per 10 grams</CardDescription>

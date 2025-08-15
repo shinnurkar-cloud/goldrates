@@ -6,32 +6,14 @@ import { Info } from 'lucide-react';
 
 type MessageBoardProps = {
   initialMessage: string;
-  apiKey?: string;
 };
 
-export function MessageBoard({ initialMessage, apiKey }: MessageBoardProps) {
+export function MessageBoard({ initialMessage }: MessageBoardProps) {
   const [message, setMessage] = useState(initialMessage);
 
   useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        const res = await fetch('/api/message');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.message !== message) {
-            setMessage(data.message);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch message:', error);
-      }
-    };
-
-    if (apiKey) {
-      const interval = setInterval(fetchMessage, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-  }, [message, apiKey]);
+    setMessage(initialMessage);
+  }, [initialMessage]);
 
   return (
     <Card className="w-full bg-secondary/50 border-secondary">

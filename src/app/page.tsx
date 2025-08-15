@@ -15,8 +15,7 @@ export default function Home() {
   const history = getGoldPriceHistory();
   const { message } = getMessage();
   const images = getCarouselImages();
-  const apiKey = process.env.GOLD_API_KEY;
-
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-foreground p-4 font-body">
       <main className="w-full max-w-md mx-auto space-y-8 flex flex-col flex-grow justify-center">
@@ -24,7 +23,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
             <Gem className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground mb-2">
             Kalaburagi Saraf Bazar Price
           </h1>
           <p className="text-primary">
@@ -33,9 +32,9 @@ export default function Home() {
         </header>
 
         <ImageCarousel initialImages={images} />
-        <MessageBoard initialMessage={message} apiKey={apiKey} />
-        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} apiKey={apiKey} />
-        <PriceHistory initialHistory={history} apiKey={apiKey} />
+        <MessageBoard initialMessage={message} />
+        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} />
+        <PriceHistory initialHistory={history} />
 
         <div className="w-full pt-4">
           <AdminPanel />

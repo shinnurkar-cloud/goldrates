@@ -14,36 +14,10 @@ type PriceHistoryEntry = {
 
 type PriceHistoryProps = {
   initialHistory: PriceHistoryEntry[];
-  apiKey?: string;
 };
 
-export function PriceHistory({ initialHistory, apiKey }: PriceHistoryProps) {
-  const [history, setHistory] = useState<PriceHistoryEntry[]>(initialHistory);
-
-  useEffect(() => {
-    const fetchHistory = async () => {
-        try {
-            const res = await fetch('/api/price/history');
-            if (res.ok) {
-                const data = await res.json();
-                // Simple check to see if data is different
-                if (JSON.stringify(data) !== JSON.stringify(history)) {
-                    setHistory(data);
-                }
-            }
-        } catch (error) {
-            console.error('Failed to fetch price history:', error);
-        }
-    };
-    
-    // We don't need the API key for history, but this ensures polling starts
-    // at the same time as the price display.
-    if(apiKey){
-      const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-
-  }, [history, apiKey]);
+export function PriceHistory({ initialHistory }: PriceHistoryProps) {
+  const [history] = useState<PriceHistoryEntry[]>(initialHistory);
 
   const getTrend = (index: number, fullHistory: PriceHistoryEntry[]) => {
     if (index === 0) {
