@@ -29,7 +29,7 @@ export default function Home() {
           </h1>
           <div className="overflow-x-hidden whitespace-nowrap">
             <p className="text-primary inline-block animate-marquee">
-              Live Gold Prices in Kalaburagi Saraf Bazar.
+              For the First time Live Gold Prices in Kalaburagi Saraf Bazar.
             </p>
           </div>
         </header>
