@@ -23,7 +23,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full border-2 border-primary/20">
             <Gem className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold font-headline bg-gradient-to-r from-yellow-400 to-primary bg-clip-text text-transparent">
             SDR Bazar Bhav
           </h1>
           <div className="overflow-x-hidden whitespace-nowrap">
