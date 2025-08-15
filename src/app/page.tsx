@@ -42,7 +42,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          shinnurkar &copy; {new Date().getFullYear()} Kalaburagi Saraf Bazar Price. All rights reserved.
+          shinnurkar &copy; {new Date().getFullYear()} Shinnurkar Kalaburagi Saraf Bazar Price. All rights reserved.
         </p>
       </footer>
     </div>
