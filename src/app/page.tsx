@@ -5,6 +5,7 @@ import { Gem } from 'lucide-react';
 import { PriceHistory } from '@/components/price-history';
 import { MessageBoard } from '@/components/message-board';
 import { ImageCarousel } from '@/components/image-carousel';
+import { PriceCalculator } from '@/components/price-calculator';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -37,6 +38,7 @@ export default function Home() {
         <MessageBoard initialMessage={message} />
         <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} />
         <PriceHistory initialHistory={history} />
+        <PriceCalculator currentPrice={price} />
 
         <div className="w-full pt-4">
           <AdminPanel />
