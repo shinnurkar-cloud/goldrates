@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 type ImageCarouselProps = {
   initialImages: string[];
@@ -17,6 +18,9 @@ type ImageCarouselProps = {
 
 export function ImageCarousel({ initialImages }: ImageCarouselProps) {
   const [images, setImages] = useState(initialImages);
+  const plugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
 
   useEffect(() => {
     // This is a placeholder for potential real-time updates via polling or websockets
@@ -26,7 +30,15 @@ export function ImageCarousel({ initialImages }: ImageCarouselProps) {
   return (
     <Card>
       <CardContent className="p-4">
-        <Carousel className="w-full">
+        <Carousel 
+          className="w-full"
+          plugins={[plugin.current]}
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+          opts={{
+            loop: true,
+          }}
+        >
           <CarouselContent>
             {images.map((src, index) => (
               <CarouselItem key={index}>
