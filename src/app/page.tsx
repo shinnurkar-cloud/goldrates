@@ -46,7 +46,7 @@ export default function Home() {
       </main>
       <footer className="text-center py-4 mt-auto">
         <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} KALABURAGI GOLD PRICE. Shinnurkar All rights reserved.
+          &copy; {new Date().getFullYear()} Shinnurkar KALABURAGI GOLD PRICE. All rights reserved.
         </p>
       </footer>
     </div>
