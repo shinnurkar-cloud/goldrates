@@ -36,7 +36,7 @@ export default function Home() {
 
         <ImageCarousel initialImages={images} />
         <MessageBoard initialMessage={message} />
-        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} initialHistory={history} />
+        <GoldPriceDisplay initialPrice={price} initialLastUpdated={lastUpdated as any} />
         <PriceHistory initialHistory={history} />
         <PriceCalculator currentPrice={price} />
 

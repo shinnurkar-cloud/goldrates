@@ -17,7 +17,26 @@ type PriceHistoryProps = {
 };
 
 export function PriceHistory({ initialHistory }: PriceHistoryProps) {
-  const [history] = useState<PriceHistoryEntry[]>(initialHistory);
+  const [history, setHistory] = useState<PriceHistoryEntry[]>(initialHistory);
+  const [isClient, setIsClient] = useState(false);
+
+  const fetchHistory = async () => {
+    try {
+        const res = await fetch('/api/price/history');
+        if(res.ok) {
+            const data = await res.json();
+            setHistory(data);
+        }
+    } catch(e) {
+        console.error("Failed to fetch price history", e);
+    }
+  }
+
+  useEffect(() => {
+    setIsClient(true);
+    const interval = setInterval(fetchHistory, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const getTrend = (index: number, fullHistory: PriceHistoryEntry[]) => {
     if (index === 0) {
@@ -36,11 +55,6 @@ export function PriceHistory({ initialHistory }: PriceHistoryProps) {
     return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: 0 };
   };
   
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   const reversedHistory = [...history].reverse();
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
@@ -13,40 +13,71 @@ type PriceHistoryEntry = {
 type GoldPriceDisplayProps = {
   initialPrice: number;
   initialLastUpdated: string;
-  initialHistory: PriceHistoryEntry[];
-  apiKey?: string;
 };
 
-export function GoldPriceDisplay({ initialPrice, initialLastUpdated, initialHistory, apiKey }: GoldPriceDisplayProps) {
-  const [price] = useState(initialPrice);
-  const [lastUpdated] = useState(initialLastUpdated);
-  const [history] = useState(initialHistory);
+export function GoldPriceDisplay({ initialPrice, initialLastUpdated }: GoldPriceDisplayProps) {
+  const [price, setPrice] = useState(initialPrice);
+  const [lastUpdated, setLastUpdated] = useState(initialLastUpdated);
+  const [history, setHistory] = useState<PriceHistoryEntry[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
+  const initialPriceRef = useRef(initialPrice);
+
+  const fetchPriceData = async () => {
+    try {
+      const [priceRes, historyRes] = await Promise.all([
+        fetch('/api/price'),
+        fetch('/api/price/history')
+      ]);
+
+      if (priceRes.ok) {
+        const priceData = await priceRes.json();
+        if (priceData.price !== price) {
+          setPrice(priceData.price);
+          setLastUpdated(priceData.lastUpdated);
+        }
+      }
+      if (historyRes.ok) {
+        const historyData = await historyRes.json();
+        setHistory(historyData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch price data', error);
+    }
+  };
 
   useEffect(() => {
-    // Format date initially
+    const interval = setInterval(fetchPriceData, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [price]);
+
+  useEffect(() => {
     if (lastUpdated) {
       setFormattedDate(format(new Date(lastUpdated), "MMM d, yyyy 'at' h:mm a"));
     }
   }, [lastUpdated]);
 
   useEffect(() => {
-    if (price !== initialPrice) {
+    if (price !== initialPriceRef.current) {
       setIsAnimating(true);
       const timer = setTimeout(() => setIsAnimating(false), 500);
+      initialPriceRef.current = price;
       return () => clearTimeout(timer);
     }
-  }, [price, initialPrice]);
+  }, [price]);
 
   const getTrend = () => {
     if (history.length < 2) {
       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
     }
-    // Use the initial props for trend calculation as state won't update without polling
-    const currentPrice = initialHistory[initialHistory.length - 1].price;
-    const previousPrice = initialHistory[initialHistory.length - 2].price;
-    const difference = currentPrice - previousPrice;
+    const currentEntry = history[history.length - 1];
+    const previousEntry = history[history.length - 2];
+    
+    if (!currentEntry || !previousEntry) {
+       return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, color: "text-muted-foreground", difference: null };
+    }
+
+    const difference = currentEntry.price - previousEntry.price;
 
     if (difference > 0) {
       return { icon: <ArrowUp className="h-4 w-4 text-green-500" />, color: "text-green-500", difference };

@@ -11,9 +11,24 @@ type MessageBoardProps = {
 export function MessageBoard({ initialMessage }: MessageBoardProps) {
   const [message, setMessage] = useState(initialMessage);
 
+  const fetchMessage = async () => {
+    try {
+        const res = await fetch('/api/message');
+        if (res.ok) {
+            const data = await res.json();
+            if(data.message !== message) {
+                setMessage(data.message);
+            }
+        }
+    } catch(e) {
+        console.error("Failed to fetch message", e);
+    }
+  }
+
   useEffect(() => {
-    setMessage(initialMessage);
-  }, [initialMessage]);
+    const interval = setInterval(fetchMessage, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [message]);
 
   return (
     <Card className="w-full bg-secondary/50 border-secondary">

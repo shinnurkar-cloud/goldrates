@@ -22,9 +22,25 @@ export function ImageCarousel({ initialImages }: ImageCarouselProps) {
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
+  const fetchImages = async () => {
+    try {
+      const res = await fetch('/api/images');
+      if (res.ok) {
+        const data = await res.json();
+        // Simple check to see if arrays are different
+        if (JSON.stringify(data.images) !== JSON.stringify(images)) {
+          setImages(data.images);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch images', error);
+    }
+  };
+
   useEffect(() => {
-    setImages(initialImages);
-  }, [initialImages]);
+    const interval = setInterval(fetchImages, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [images]);
 
   return (
     <Card>

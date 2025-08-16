@@ -11,11 +11,11 @@ let goldPriceHistory: GoldPriceHistoryEntry[] = [
 ];
 let message: string = 'Welcome! All prices are for 24 Karat Gold per 10 grams.';
 let carouselImages: string[] = [
-    "https://placehold.co/600x400.png?text=gold+bars",
-    "https://placehold.co/600x400.png?text=gold+bars",
-    "https://placehold.co/600x400.png?text=gold+bars",
-    "https://placehold.co/600x400.png?text=gold+bars",
-    "https://placehold.co/600x400.png?text=gold+bars",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
+    "https://placehold.co/600x400.png",
 ];
 
 
@@ -44,7 +44,7 @@ export const getGoldPriceHistory = (): GoldPriceHistoryEntry[] => {
 export const updateGoldPrice = (newPrice: number): void => {
   goldPriceHistory.push({
     price: newPrice,
-    lastUpdated: new D_ate(),
+    lastUpdated: new Date(),
   });
 
   // Keep only the last 5 updates
