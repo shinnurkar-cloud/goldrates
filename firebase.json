@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "goldrate-xan82-afe94",
     "source": ".",
     "ignore": [
       "firebase.json",
